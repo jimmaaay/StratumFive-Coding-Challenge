@@ -8,6 +8,7 @@ const validateShipCommand = str => /^\d \d [NESW]\s[LRF]+$/.test(str);
 const runSimulation = (grid, commands) => {
   const maxX = parseInt(grid.split(' ')[0], 10);
   const maxY = parseInt(grid.split(' ')[1], 10);
+  const warnings = [];
   
   const output = commands.map((command) => {
     const parts = command.split('\n');
@@ -16,10 +17,15 @@ const runSimulation = (grid, commands) => {
     let [ignoreVar, x, y, direction] = /^(\d) (\d) ([NESW])/.exec(shipStartingPointString);
     x = parseInt(x, 10);
     y = parseInt(y, 10);
+    let isLost = false;
 
     shipMoves.split('').forEach((move) => {
+      if (isLost) return; // No point doing any other commands
       const directions = ['N', 'E', 'S', 'W'];
+      const oldY = y;
+      const oldX = x;
       let directionIndex = directions.indexOf(direction);
+
       if (move === 'F') {
 
         switch(direction) {
@@ -41,6 +47,15 @@ const runSimulation = (grid, commands) => {
           }
         }
 
+        if (y < 0 || y > maxY || x < 0 || x > maxX) {
+          isLost = true;
+          warnings.push(`${x} ${y}`);
+
+          // revert back x & y when ship was still on the grid
+          x = oldX; 
+          y = oldY; 
+        }
+
       } else if (move === 'L') {
         directionIndex--;
         if (directionIndex === -1) directionIndex = directions.length - 1;
@@ -53,7 +68,7 @@ const runSimulation = (grid, commands) => {
 
     });
 
-    return `${x} ${y} ${direction}`;
+    return `${x} ${y} ${direction}${isLost ? ' LOST': ''}`;
   });
 
   outputElement.innerHTML = output.join('<br/><br/>');
