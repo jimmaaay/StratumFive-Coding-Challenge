@@ -10,11 +10,16 @@ const runSimulation = (grid, commands) => {
   const maxY = parseInt(grid.split(' ')[1], 10);
   const warnings = [];
   
-  const output = commands.map((command) => {
+  const output = commands.map(command => {
     const parts = command.split('\n');
     const shipStartingPointString = parts[0].trim();
     const shipMoves = parts[1].trim();
-    let [ignoreVar, x, y, direction] = /^(\d) (\d) ([NESW])/.exec(shipStartingPointString);
+    let [
+      ignoreVar, 
+      x, 
+      y, 
+      direction,
+    ] = /^(\d) (\d) ([NESW])/.exec(shipStartingPointString);
     x = parseInt(x, 10);
     y = parseInt(y, 10);
     let isLost = false;
@@ -71,19 +76,21 @@ const runSimulation = (grid, commands) => {
       }
       
       direction = directions[directionIndex];
-
     });
 
     return `${x} ${y} ${direction}${isLost ? ' LOST': ''}`;
   });
 
-  outputElement.innerHTML = output.join('<br/><br/>');
+  return output;
 }
 
-input.addEventListener('change', _ => {
+input.addEventListener('input', _ => {
   const value = input.value.trim();
 
   errorMessage.textContent = '';
+  outputElement.innerHTML = '';
+
+  if (value === '') return;
 
   // move the grid details to be seperated by gap
   const commandString = value.replace('\n', '\n\n');
@@ -104,5 +111,6 @@ input.addEventListener('change', _ => {
     return;
   }
 
-  runSimulation(gridValue, commands);
+  const output = runSimulation(gridValue, commands);
+  outputElement.innerHTML = output.join('<br/>');
 });
