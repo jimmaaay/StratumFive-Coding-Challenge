@@ -1,9 +1,63 @@
 const input = document.querySelector('#input');
-const output = document.querySelector('#output');
+const outputElement = document.querySelector('#output');
 const errorMessage = document.querySelector('#errorMessage');
 
 const validateGridValue = str => /^\d \d$/.test(str);
 const validateShipCommand = str => /^\d \d [NESW]\s[LRF]+$/.test(str);
+
+const runSimulation = (grid, commands) => {
+  const maxX = parseInt(grid.split(' ')[0], 10);
+  const maxY = parseInt(grid.split(' ')[1], 10);
+  
+  const output = commands.map((command) => {
+    const parts = command.split('\n');
+    const shipStartingPointString = parts[0].trim();
+    const shipMoves = parts[1].trim();
+    let [ignoreVar, x, y, direction] = /^(\d) (\d) ([NESW])/.exec(shipStartingPointString);
+    x = parseInt(x, 10);
+    y = parseInt(y, 10);
+
+    shipMoves.split('').forEach((move) => {
+      const directions = ['N', 'E', 'S', 'W'];
+      let directionIndex = directions.indexOf(direction);
+      if (move === 'F') {
+
+        switch(direction) {
+          case 'N': {
+            y++;
+            break;
+          }
+          case 'E': {
+            x++;
+            break;
+          }
+          case 'S': {
+            y--;
+            break;
+          }
+          case 'W': {
+            x--;
+            break;
+          }
+        }
+
+      } else if (move === 'L') {
+        directionIndex--;
+        if (directionIndex === -1) directionIndex = directions.length - 1;
+      } else if (move === 'R') {
+        directionIndex++;
+        if (directionIndex === directions.length) directionIndex = 0;
+      }
+      
+      direction = directions[directionIndex];
+
+    });
+
+    return `${x} ${y} ${direction}`;
+  });
+
+  outputElement.innerHTML = output.join('<br/><br/>');
+}
 
 input.addEventListener('change', _ => {
   const value = input.value.trim();
@@ -29,5 +83,5 @@ input.addEventListener('change', _ => {
     return;
   }
 
-
+  runSimulation(gridValue, commands);
 });
