@@ -47,6 +47,12 @@ const runSimulation = (grid, commands) => {
           }
         }
 
+        if (warnings.indexOf(`${x} ${y}`) !== -1) {
+          // revert back x & y as a ship has previously fallen off there and sent warning
+          x = oldX; 
+          y = oldY; 
+        }
+
         if (y < 0 || y > maxY || x < 0 || x > maxX) {
           isLost = true;
           warnings.push(`${x} ${y}`);
