@@ -2,8 +2,8 @@ const input = document.querySelector('#input');
 const outputElement = document.querySelector('#output');
 const errorMessage = document.querySelector('#errorMessage');
 
-const validateGridValue = str => /^\d \d$/.test(str);
-const validateShipCommand = str => /^\d \d [NESW]\s[LRF]+$/.test(str);
+const validateGridValue = str => /^\d+ \d+$/.test(str);
+const validateShipCommand = str => /^\d+ \d+ [NESW]\s[LRF]+$/.test(str);
 
 const runSimulation = (grid, commands) => {
   const maxX = parseInt(grid.split(' ')[0], 10);
@@ -19,7 +19,7 @@ const runSimulation = (grid, commands) => {
       x, 
       y, 
       direction,
-    ] = /^(\d) (\d) ([NESW])/.exec(shipStartingPointString);
+    ] = /^(\d+) (\d+) ([NESW])/.exec(shipStartingPointString);
     x = parseInt(x, 10);
     y = parseInt(y, 10);
     let isLost = false;
